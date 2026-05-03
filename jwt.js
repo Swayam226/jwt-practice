@@ -5,7 +5,7 @@ app.use(express.json());
 
 const users = [];
 
-
+// middleware for verification
 function verifyUser(req, res, next) {
     const token = req.headers.token;
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -59,7 +59,5 @@ app.get('/me', verifyUser, function (req, res) {
         message: `welcome ${req.decoded}`
     })
 })
-
-
 
 app.listen(3000);
