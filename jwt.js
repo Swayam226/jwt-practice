@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const app = express();
 app.use(express.json());
 
@@ -8,11 +9,11 @@ const users = [];
 // middleware for verification
 function verifyUser(req, res, next) {
     const token = req.headers.token;
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const username = decoded.username;
-    const user = users.find((user) => user.username === username);
-    if (user) {
-        req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // const username = decoded.username;
+    // const user = users.find((user) => user.username === username);
+    if (decoded.username) {
+        req.username = decoded.username;
         next();
     } else {
         res.status(403).json({ msg: "denied" })
@@ -43,7 +44,7 @@ app.post('/signin', function (req, res) {
     if (user) {
         const token = jwt.sign({
             username: username
-        }, JWT_SECRET);
+        }, process.env.JWT_SECRET);
         res.json({
             token: token
         });
@@ -55,8 +56,8 @@ app.post('/signin', function (req, res) {
 
 app.get('/me', verifyUser, function (req, res) {
     res.json({
-        username: req.decoded,
-        message: `welcome ${req.decoded}`
+        username: req.username,
+        message: `welcome ${req.username}`
     })
 })
 
